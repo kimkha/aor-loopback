@@ -2,7 +2,7 @@
 
 Vietnamese translations for [admin-on-rest](https://github.com/marmelab/admin-on-rest), the frontend framework for building admin applications on top of REST services.
 
-![admin-on-rest demo](http://static.marmelab.com/admin-on-rest.gif)
+[![admin-on-rest-demo](https://marmelab.com/admin-on-rest/img/admin-on-rest-demo-still.png)](https://vimeo.com/205118063)
 
 ## Installation
 
