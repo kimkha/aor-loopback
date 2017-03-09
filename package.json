@@ -1,0 +1,24 @@
+{
+  "name": "aor-language-vietnamese",
+  "version": "1.0.0",
+  "description": "Vietnamese translations for admin-on-rest, the frontend framework for building admin applications on top of REST services",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/kimkha/aor-language-vietnamese.git"
+  },
+  "keywords": [
+    "react",
+    "admin-on-rest",
+    "translation"
+  ],
+  "author": "Nguyen Kim Kha",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/kimkha/aor-language-vietnamese/issues"
+  },
+  "homepage": "https://github.com/kimkha/aor-language-vietnamese#readme"
+}
