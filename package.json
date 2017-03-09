@@ -1,6 +1,6 @@
 {
   "name": "aor-language-vietnamese",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Vietnamese translations for admin-on-rest, the frontend framework for building admin applications on top of REST services",
   "main": "index.js",
   "scripts": {
