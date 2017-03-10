@@ -4,4 +4,4 @@ Loopback-style REST Client for [admin-on-rest](https://github.com/marmelab/admin
 
 ## License
 
-This translation is licensed under the [MIT Licence](LICENSE).
+This module is licensed under the [MIT Licence](LICENSE).
