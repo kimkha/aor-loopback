@@ -1,7 +1,7 @@
 {
   "name": "aor-loopback",
   "version": "0.1.0",
-  "description": "Vietnamese translations for admin-on-rest, the frontend framework for building admin applications on top of REST services",
+  "description": "Loopback-style REST Client for Admin-on-rest, the frontend framework for building admin applications on top of REST services",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
