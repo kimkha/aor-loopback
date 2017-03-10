@@ -1,11 +1,11 @@
 {
   "name": "aor-loopback",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Loopback-style REST Client for Admin-on-rest, the frontend framework for building admin applications on top of REST services",
   "main": "lib/index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "NODE_ENV=production ./node_modules/.bin/babel ./src -d lib --presets babel-preset-es2015 --ignore '*.spec.js'"
+    "build": "babel ./src -d lib --presets babel-preset-es2015 --ignore '*.spec.js'"
   },
   "files": [
     "*.md",
@@ -33,5 +33,8 @@
   "bugs": {
     "url": "https://github.com/kimkha/aor-loopback/issues"
   },
-  "homepage": "https://github.com/kimkha/aor-loopback#readme"
+  "homepage": "https://github.com/kimkha/aor-loopback#readme",
+  "dependencies": {
+    "lodash-inflection": "^1.5.0"
+  }
 }
