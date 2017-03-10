@@ -1,4 +1,3 @@
-import * as _i from 'lodash-inflection';
 import { queryParameters, fetchJson } from './fetch';
 import {
   GET_LIST,
@@ -30,7 +29,7 @@ export default (apiUrl, httpClient = fetchJson) => {
    * @returns {Object} { url, options } The HTTP request parameters
    */
   const convertRESTRequestToHTTP = (type, resource, params) => {
-    resource = _i.pluralize(resource).toLowerCase();
+    resource = resource.toLowerCase();
     let url = '';
     const options = {};
     switch (type) {
