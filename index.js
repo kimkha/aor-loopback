@@ -1,64 +1,135 @@
-module.exports = {
-    aor: {
-        action: {
-            delete: 'Xoá',
-            show: 'Hiển thị',
-            list: 'Danh sách',
-            save: 'Lưu',
-            create: 'Tạo mới',
-            edit: 'Sửa',
-            cancel: 'Huỷ bỏ',
-            refresh: 'Làm mới',
-            add_filter: 'Thêm bộ lọc',
-            remove_filter: 'Bỏ bộ lọc',
-        },
-        boolean: {
-            true: 'Đúng',
-            false: 'Sai',
-        },
-        page: {
-            list: 'Danh sách %{name}',
-            edit: '%{name} #%{id}',
-            show: '%{name} #%{id}',
-            create: 'Tạo %{name}',
-            delete: 'Xoá %{name} #%{id}',
-            dashboard: 'Bảng điều khiển',
-        },
-        input: {
-            image: {
-                upload_several: 'Kéo thả nhiều tập tin để tải lên, hoặc click để chọn một cái.',
-                upload_single: 'Kéo thả tập tin để tải lên, hoặc click để chọn nó.',
-            },
-        },
-        message: {
-            yes: 'Có',
-            no: 'Không',
-            are_you_sure: 'Bạn có chắc không ?',
-            about: 'Về',
-        },
-        navigation: {
-            page_out_of_boundaries: 'Trang số %{page} đã vượt giới hạn',
-            page_out_from_end: 'Không thể đi tiếp sau trang cuối',
-            page_out_from_begin: 'Không thể trở lại trước trang 1',
-            page_range_info: '%{offsetBegin}-%{offsetEnd} của %{total}',
-            next: 'Tiếp',
-            prev: 'Trước',
-        },
-        auth: {
-            username: 'Tên đăng nhập',
-            password: 'Mật khẩu',
-            sign_in: 'Đăng nhập',
-            sign_in_error: 'Đăng nhập thất bại, vui lòng thử lại',
-            logout: 'Đăng xuất',
-        },
-        notification: {
-            updated: 'Thành phần được cập nhật',
-            created: 'Thành phần đã được tạo',
-            deleted: 'Thành phần đã bị xoá',
-            item_doesnt_exist: 'Thành phần không tồn tại',
-        },
-        validation: {
-            required: 'Bắt buộc',
-        },
-    },
+import { queryParameters, fetchJson } from './fetch';
+import {
+  GET_LIST,
+  GET_ONE,
+  GET_MANY,
+  GET_MANY_REFERENCE,
+  CREATE,
+  UPDATE,
+  DELETE,
+} from './types';
+
+/**
+ * Maps admin-on-rest queries to a loopback powered REST API
+ *
+ * @see https://github.com/strongloop/loopback
+ * @example
+ * GET_LIST     => GET http://my.api.url/posts?filter[sort]="title ASC"&filter[skip]=0&filter[limit]=20
+ * GET_ONE      => GET http://my.api.url/posts/123
+ * GET_MANY     => GET http://my.api.url/posts?filter[where][or]=[{id:123},{id:456}]
+ * UPDATE       => PUT http://my.api.url/posts/123
+ * CREATE       => POST http://my.api.url/posts/123
+ * DELETE       => DELETE http://my.api.url/posts/123
+ */
+export default (apiUrl, httpClient = fetchJson) => {
+  /**
+   * @param {String} type One of the constants appearing at the top if this file, e.g. 'UPDATE'
+   * @param {String} resource Name of the resource to fetch, e.g. 'posts'
+   * @param {Object} params The REST request params, depending on the type
+   * @returns {Object} { url, options } The HTTP request parameters
+   */
+  const convertRESTRequestToHTTP = (type, resource, params) => {
+    let url = '';
+    const options = {};
+    switch (type) {
+      case GET_LIST: {
+        const { page, perPage } = params.pagination;
+        const { field, order } = params.sort;
+        const query = {};
+        query['where'] = {...params.filter};
+        if (field) query['order'] = [field+' '+order];
+        if (perPage > 0) {
+          query['limit'] = perPage;
+          if (page >= 0) {
+            query['skip'] = (page - 1) * perPage;
+          }
+        }
+        url = `${apiUrl}/${resource}?${queryParameters({filter: query})}`;
+        break;
+      }
+      case GET_ONE:
+        url = `${apiUrl}/${resource}/${params.id}`;
+        break;
+      case GET_MANY: {
+        const listId = params.ids.map(id => {
+          return {'id': id};
+        });
+        const query = {
+          'where': {'or': listId}
+        };
+        url = `${apiUrl}/${resource}?${queryParameters({filter: query})}`;
+        break;
+      }
+      case GET_MANY_REFERENCE: {
+        const { page, perPage } = params.pagination;
+        const { field, order } = params.sort;
+        const query = {};
+        query['where'] = {...params.filter};
+        query['where'][params.target] = params.id;
+        if (field) query['order'] = [field+' '+order];
+        if (perPage > 0) {
+          query['limit'] = perPage;
+          if (page >= 0) {
+            query['skip'] = (page - 1) * perPage;
+          }
+        }
+        url = `${apiUrl}/${resource}?${queryParameters({filter: query})}`;
+        break;
+      }
+      case UPDATE:
+        url = `${apiUrl}/${resource}/${params.id}`;
+        options.method = 'PUT';
+        options.body = JSON.stringify(params.data);
+        break;
+      case CREATE:
+        url = `${apiUrl}/${resource}`;
+        options.method = 'POST';
+        options.body = JSON.stringify(params.data);
+        break;
+      case DELETE:
+        url = `${apiUrl}/${resource}/${params.id}`;
+        options.method = 'DELETE';
+        break;
+      default:
+        throw new Error(`Unsupported fetch action type ${type}`);
+    }
+    return { url, options };
+  };
+
+  /**
+   * @param {Object} response HTTP response from fetch()
+   * @param {String} type One of the constants appearing at the top if this file, e.g. 'UPDATE'
+   * @param {String} resource Name of the resource to fetch, e.g. 'posts'
+   * @param {Object} params The REST request params, depending on the type
+   * @returns {Object} REST response
+   */
+  const convertHTTPResponseToREST = (response, type, resource, params) => {
+    const { headers, json } = response;
+    switch (type) {
+      case GET_LIST:
+        if (!headers.has('x-total-count')) {
+          throw new Error('The X-Total-Count header is missing in the HTTP Response. The jsonServer REST client expects responses for lists of resources to contain this header with the total number of results to build the pagination. If you are using CORS, did you declare X-Total-Count in the Access-Control-Expose-Headers header?');
+        }
+        return {
+          data: json.map(x => x),
+          total: parseInt(headers.get('x-total-count').split('/').pop(), 10),
+        };
+      case CREATE:
+        return { ...params.data, id: json.id };
+      default:
+        return json;
+    }
+  };
+
+  /**
+   * @param {string} type Request type, e.g GET_LIST
+   * @param {string} resource Resource name, e.g. "posts"
+   * @param {Object} payload Request parameters. Depends on the request type
+   * @returns {Promise} the Promise for a REST response
+   */
+  return (type, resource, params) => {
+    const { url, options } = convertRESTRequestToHTTP(type, resource, params);
+    return httpClient(url, options)
+      .then(response => convertHTTPResponseToREST(response, type, resource, params));
+  };
 };

@@ -1,6 +1,6 @@
 {
-  "name": "aor-language-vietnamese",
-  "version": "1.0.1",
+  "name": "aor-loopback",
+  "version": "0.1.0",
   "description": "Vietnamese translations for admin-on-rest, the frontend framework for building admin applications on top of REST services",
   "main": "index.js",
   "scripts": {
@@ -8,17 +8,18 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/kimkha/aor-language-vietnamese.git"
+    "url": "git+https://github.com/kimkha/aor-loopback.git"
   },
   "keywords": [
     "react",
     "admin-on-rest",
-    "translation"
+    "loopback",
+    "rest-client"
   ],
   "author": "Nguyen Kim Kha",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/kimkha/aor-language-vietnamese/issues"
+    "url": "https://github.com/kimkha/aor-loopback/issues"
   },
-  "homepage": "https://github.com/kimkha/aor-language-vietnamese#readme"
+  "homepage": "https://github.com/kimkha/aor-loopback#readme"
 }
