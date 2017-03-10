@@ -1,6 +1,6 @@
 {
   "name": "aor-loopback",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Loopback-style REST Client for Admin-on-rest, the frontend framework for building admin applications on top of REST services",
   "main": "lib/index.js",
   "scripts": {
