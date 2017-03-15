@@ -7,8 +7,11 @@ export const fetchJson = (url, options = {}) => {
     if (!(options && options.body && options.body instanceof FormData)) {
         requestHeaders.set('Content-Type', 'application/json');
     }
-    if (options.user && options.user.authenticated && options.user.token) {
-        requestHeaders.set('Authorization', options.user.token);
+    var token = localStorage.getItem('token');
+    if (url.indexOf('?') >= 0) {
+        url = url + '&access_token='+token;
+    } else {
+        url = url + '?access_token='+token;
     }
 
     return fetch(url, { ...options, headers: requestHeaders })
