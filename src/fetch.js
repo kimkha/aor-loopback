@@ -7,11 +7,15 @@ export const fetchJson = (url, options = {}) => {
     if (!(options && options.body && options.body instanceof FormData)) {
         requestHeaders.set('Content-Type', 'application/json');
     }
-    var token = localStorage.getItem('token');
-    if (url.indexOf('?') >= 0) {
-        url = url + '&access_token='+token;
+    if (options.user && options.user.authenticated && options.user.token) {
+        requestHeaders.set('Authorization', options.user.token);
     } else {
-        url = url + '?access_token='+token;
+        var token = localStorage.getItem('lbtoken');
+        if (url.indexOf('?') >= 0) {
+            url = url + '&access_token='+token;
+        } else {
+            url = url + '?access_token='+token;
+        }
     }
 
     return fetch(url, { ...options, headers: requestHeaders })

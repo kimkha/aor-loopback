@@ -1,10 +1,10 @@
 
-export default (apiUrl, noAccessPage) => {
+export const authClient = (apiUrl, noAccessPage) => {
 
     return (type, params) => {
         if (type === 'AUTH_LOGIN') {
             const { username, password } = params;
-            const request = new Request(apiUrl, {
+            const request = new Request(apiUrl + '/login', {
                 method: 'POST',
                 body: JSON.stringify({ username, password }),
                 headers: new Headers({ 'Content-Type': 'application/json' }),
@@ -17,15 +17,15 @@ export default (apiUrl, noAccessPage) => {
                     return response.json();
                 })
                 .then(({ id }) => {
-                    localStorage.setItem('token', id)
+                    localStorage.setItem('lbtoken', id)
                 });
         }
         if (type === 'AUTH_LOGOUT') {
-            localStorage.removeItem('token');
+            localStorage.removeItem('lbtoken');
             return Promise.resolve();
         }
         if (type === 'AUTH_CHECK') {
-            return localStorage.getItem('token') ? Promise.resolve() : Promise.reject({ redirectTo: noAccessPage });
+            return localStorage.getItem('lbtoken') ? Promise.resolve() : Promise.reject({ redirectTo: noAccessPage });
         }
         return Promise.reject('Unkown method');
     };
