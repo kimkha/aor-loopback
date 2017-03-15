@@ -2,6 +2,10 @@
 
 Loopback-style REST Client for [admin-on-rest](https://github.com/marmelab/admin-on-rest), the frontend framework for building admin applications on top of REST services.
 
+# Important note
+
+Because of recent changes of **admin-on-rest**, this module will only support version 0.9.0 (or later) of admin-on-rest.
+
 ## How to use
 
 1. `yarn add aor-loopback`
@@ -13,6 +17,16 @@ import loopbackRestClient from 'aor-loopback';
 ...
 
     <Admin restClient={loopbackRestClient('http://my.api.url/api')} ...>
+```
+
+3. If you want this module handle authentication, add this:
+
+```
+import loopbackRestClient, {authClient} from 'aor-loopback';
+
+...
+
+    <Admin restClient={loopbackRestClient('http://my.api.url/api')} authClient={authClient('http://my.api.url/api/users')} ...>
 ```
 
 ## License
