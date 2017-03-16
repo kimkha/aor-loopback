@@ -59,7 +59,7 @@ export default (apiUrl, httpClient = fetchJson) => {
                 const query = {
                     'where': {'or': listId}
                 };
-                url = `${apiUrl}/${resource}?${queryParameters({filter: query})}`;
+                url = `${apiUrl}/${resource}?${queryParameters({filter: JSON.stringify(query)})}`;
                 break;
             }
             case GET_MANY_REFERENCE: {
@@ -75,7 +75,7 @@ export default (apiUrl, httpClient = fetchJson) => {
                         query['skip'] = (page - 1) * perPage;
                     }
                 }
-                url = `${apiUrl}/${resource}?${queryParameters({filter: query})}`;
+                url = `${apiUrl}/${resource}?${queryParameters({filter: JSON.stringify(query)})}`;
                 break;
             }
             case UPDATE:
