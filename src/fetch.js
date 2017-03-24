@@ -1,4 +1,5 @@
 import HttpError from './HttpError';
+import storage from './storage';
 
 export const fetchJson = (url, options = {}) => {
     const requestHeaders = options.headers || new Headers({
@@ -10,7 +11,7 @@ export const fetchJson = (url, options = {}) => {
     if (options.user && options.user.authenticated && options.user.token) {
         requestHeaders.set('Authorization', options.user.token);
     } else {
-        var token = localStorage.getItem('lbtoken');
+        var token = storage.load('lbtoken');
         if (url.indexOf('?') >= 0) {
             url = url + '&access_token='+token;
         } else {

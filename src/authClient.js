@@ -1,3 +1,4 @@
+import storage from './storage';
 
 export const authClient = (apiUrl, noAccessPage) => {
 
@@ -16,16 +17,16 @@ export const authClient = (apiUrl, noAccessPage) => {
                     }
                     return response.json();
                 })
-                .then(({ id }) => {
-                    localStorage.setItem('lbtoken', id)
+                .then(({ id, ttl }) => {
+                    storage.save('lbtoken', id, ttl);
                 });
         }
         if (type === 'AUTH_LOGOUT') {
-            localStorage.removeItem('lbtoken');
+            storage.remove('lbtoken');
             return Promise.resolve();
         }
         if (type === 'AUTH_CHECK') {
-            return localStorage.getItem('lbtoken') ? Promise.resolve() : Promise.reject({ redirectTo: noAccessPage });
+            return storage.load('lbtoken') ? Promise.resolve() : Promise.reject({ redirectTo: noAccessPage });
         }
         return Promise.reject('Unkown method');
     };
