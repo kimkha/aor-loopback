@@ -1,5 +1,5 @@
 
-export default storage = {
+export default {
     save : function(key, value, expirationSec){
         if (typeof (Storage) == "undefined") { return false; }
         var expirationMS = expirationSec * 1000;
