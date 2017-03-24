@@ -9,7 +9,7 @@ export default {
     },
     load : function(key){
         if (typeof (Storage) == "undefined") { return false; }
-        var record = localStorage.getItem(key);
+        var record = JSON.parse(localStorage.getItem(key));
         if (!record){return false;}
         return (new Date().getTime() < record.timestamp && record.value);
     },
