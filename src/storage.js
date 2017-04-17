@@ -9,9 +9,15 @@ export default {
     },
     load : function(key){
         if (typeof (Storage) == "undefined") { return false; }
-        var record = JSON.parse(localStorage.getItem(key));
-        if (!record){return false;}
-        return (new Date().getTime() < record.timestamp && record.value);
+        try {
+            var record = JSON.parse(localStorage.getItem(key));
+            if (!record) {
+                return false;
+            }
+            return (new Date().getTime() < record.timestamp && record.value);
+        } catch (e) {
+            return false;
+        }
     },
     remove : function(key){
         if (typeof (Storage) == "undefined") { return false; }
