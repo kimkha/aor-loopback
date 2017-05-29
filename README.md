@@ -6,6 +6,10 @@ Loopback-style REST Client for [admin-on-rest](https://github.com/marmelab/admin
 
 Because of recent changes of **admin-on-rest**, this module will only support version 0.9.0 (or later) of admin-on-rest.
 
+## Prerequisite
+
+* Your loopback server must response `X-Total-Count` header when querying list. Please use [loopback3-xTotalCount](https://github.com/kimkha/loopback3-xTotalCount) on your server end.
+
 ## How to use
 
 1. `yarn add aor-loopback`
