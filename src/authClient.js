@@ -1,13 +1,12 @@
 import storage from './storage';
 
-export const authClient = (apiUrl, noAccessPage) => {
+export const authClient = (loginApiUrl, noAccessPage = '/login') => {
 
     return (type, params) => {
         if (type === 'AUTH_LOGIN') {
-            const { username, password } = params;
-            const request = new Request(apiUrl + '/login', {
+            const request = new Request(loginApiUrl, {
                 method: 'POST',
-                body: JSON.stringify({ username, password }),
+                body: JSON.stringify(params),
                 headers: new Headers({ 'Content-Type': 'application/json' }),
             });
             return fetch(request)
@@ -17,17 +16,31 @@ export const authClient = (apiUrl, noAccessPage) => {
                     }
                     return response.json();
                 })
-                .then(({ id, ttl }) => {
-                    storage.save('lbtoken', id, ttl);
+                .then(({ ttl, ...data }) => {
+                    storage.save('lbtoken', data, ttl);
                 });
         }
         if (type === 'AUTH_LOGOUT') {
             storage.remove('lbtoken');
             return Promise.resolve();
         }
+        if (type === 'AUTH_ERROR') {
+            const { status } = params;
+            if (status === 401 || status === 403) {
+                storage.remove('lbtoken');
+                return Promise.reject();
+            }
+            return Promise.resolve();
+        }
         if (type === 'AUTH_CHECK') {
-            return storage.load('lbtoken') ? Promise.resolve() : Promise.reject({ redirectTo: noAccessPage });
+            const token = storage.load('lbtoken');
+            if (token && token.id) {
+                return Promise.resolve();
+            } else {
+                storage.remove('lbtoken');
+                return Promise.reject({ redirectTo: noAccessPage });
+            }
         }
         return Promise.reject('Unkown method');
     };
-}
+};

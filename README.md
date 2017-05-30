@@ -30,7 +30,7 @@ import loopbackRestClient, {authClient} from 'aor-loopback';
 
 ...
 
-    <Admin restClient={loopbackRestClient('http://my.api.url/api')} authClient={authClient('http://my.api.url/api/users')} ...>
+    <Admin restClient={loopbackRestClient('http://my.api.url/api')} authClient={authClient('http://my.api.url/api/users/login')} ...>
 ```
 
 ## License

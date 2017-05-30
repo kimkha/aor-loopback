@@ -3,19 +3,20 @@ import storage from './storage';
 
 export const fetchJson = (url, options = {}) => {
     const requestHeaders = options.headers || new Headers({
-        Accept: 'application/json',
-    });
+            Accept: 'application/json',
+        });
     if (!(options && options.body && options.body instanceof FormData)) {
         requestHeaders.set('Content-Type', 'application/json');
     }
     if (options.user && options.user.authenticated && options.user.token) {
         requestHeaders.set('Authorization', options.user.token);
     } else {
-        var token = storage.load('lbtoken');
+        let token = storage.load('lbtoken');
+        token = (token && token.id) || '';
         if (url.indexOf('?') >= 0) {
-            url = url + '&access_token='+token;
+            url = url + '&access_token=' + token;
         } else {
-            url = url + '?access_token='+token;
+            url = url + '?access_token=' + token;
         }
     }
 
@@ -41,5 +42,5 @@ export const fetchJson = (url, options = {}) => {
 };
 
 export const queryParameters = data => Object.keys(data)
-    .map(key => [key, data[key]].map(encodeURIComponent).join('='))
+    .map(key => [ key, data[ key ] ].map(encodeURIComponent).join('='))
     .join('&');
