@@ -18,7 +18,7 @@ export * from './authClient';
  * GET_LIST     => GET http://my.api.url/posts?filter[sort]="title ASC"&filter[skip]=0&filter[limit]=20
  * GET_ONE      => GET http://my.api.url/posts/123
  * GET_MANY     => GET http://my.api.url/posts?filter[where][or]=[{id:123},{id:456}]
- * UPDATE       => PUT http://my.api.url/posts/123
+ * UPDATE       => PATCH http://my.api.url/posts/123
  * CREATE       => POST http://my.api.url/posts/123
  * DELETE       => DELETE http://my.api.url/posts/123
  */
@@ -80,7 +80,7 @@ export default (apiUrl, httpClient = fetchJson) => {
             }
             case UPDATE:
                 url = `${apiUrl}/${resource}/${params.id}`;
-                options.method = 'PUT';
+                options.method = 'PATCH';
                 options.body = JSON.stringify(params.data);
                 break;
             case CREATE:
