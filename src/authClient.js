@@ -25,7 +25,7 @@ export const authClient = (loginApiUrl, noAccessPage = '/login') => {
             return Promise.resolve();
         }
         if (type === 'AUTH_ERROR') {
-            const { status } = params;
+            const status  = params.message.status;
             if (status === 401 || status === 403) {
                 storage.remove('lbtoken');
                 return Promise.reject();
