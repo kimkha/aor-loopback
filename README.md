@@ -33,6 +33,10 @@ import loopbackRestClient, {authClient} from 'aor-loopback';
     <Admin restClient={loopbackRestClient('http://my.api.url/api')} authClient={authClient('http://my.api.url/api/users/login')} ...>
 ```
 
+## Example
+
+Please check example here: [loopback-aor-boilerplate](https://github.com/kimkha/loopback-aor-boilerplate), you should clone it and change your model later.
+
 ## License
 
 This module is licensed under the [MIT Licence](LICENSE).
