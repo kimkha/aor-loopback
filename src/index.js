@@ -6,7 +6,9 @@ import {
     GET_MANY_REFERENCE,
     CREATE,
     UPDATE,
+    UPDATE_MANY,
     DELETE,
+    DELETE_MANY
 } from './types';
 export * from './authClient';
 
@@ -91,6 +93,16 @@ export default (apiUrl, httpClient = fetchJson) => {
             case DELETE:
                 url = `${apiUrl}/${resource}/${params.id}`;
                 options.method = 'DELETE';
+                break;
+            case DELETE_MANY:
+                url = `${apiUrl}/${resource}/deleteMany`;
+                options.body = JSON.stringify({ids: params.ids});
+                options.method = 'DELETE';
+                break;
+            case UPDATE_MANY:
+                url = `${apiUrl}/${resource}/updateMany`;
+                options.body = JSON.stringify(params.data);
+                options.method = 'PATCH';
                 break;
             default:
                 throw new Error(`Unsupported fetch action type ${type}`);
