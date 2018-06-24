@@ -37,6 +37,12 @@ import loopbackRestClient, {authClient} from 'aor-loopback';
 
 Please check example here: [loopback-aor-boilerplate](https://github.com/kimkha/loopback-aor-boilerplate), you should clone it and change your model later.
 
+# Changes in this branch:
+* Added DELETE_MANY case for full compatibility with react-admin list view
+* Added UPDATE_MANY
+* Stores userid in localstorage for more verifications
+* Added AUTH_GET_PERMISSIONS type for
+
 ## Loopback changes To use DELETE_MANY and UPDATE_MANY
 (TODO: implement as hook in loopback)
 1. Add deleteMany and updateMany remote method to your model  (model.js):
@@ -124,6 +130,19 @@ Model.remoteMethod('updateMany', {
     }
 })
 ```
+
+## Using Loopback ACL
+
+1. In the App.js add this:
+```
+<Admin restClient={loopbackRestClient('http://my.api.url/api', 'user-model-name-plural')} ...>
+
+```
+Where user-model-name is the plural for of the name of the user you use in loopback
+For example: "Users" or "Customers" if you extended the base model
+
+2. 
+
 ## License
 
 This module is licensed under the [MIT Licence](LICENSE).

@@ -41,6 +41,26 @@ export const authClient = (loginApiUrl, noAccessPage = '/login') => {
                 return Promise.reject({ redirectTo: noAccessPage });
             }
         }
+        if (type === 'AUTH_GET_PERMISSIONS') {
+            //get Role from API with token and userid
+            let token = localStorage.getItem('token');
+            let userId = localStorage.getItem('userId');
+            const request = new Request(config.config.apiRoot + '/customers/getRolesById?access_token=' + token, {
+                method: 'POST',
+                body: JSON.stringify({ id: userId }),
+                headers: new Headers({ 'Content-Type': 'application/json' }),
+            })
+            return fetch(request)
+                .then(response => {
+                    if (response.status < 200 || response.status >= 300) {
+                        throw new Error(response.statusText);
+                    }
+                    return response.json();
+                })
+                .then(response => {
+                    return response.payload.roles;
+                });
+        }
         return Promise.reject('Unkown method');
     };
 };

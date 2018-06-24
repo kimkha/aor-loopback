@@ -31,6 +31,16 @@ export default (apiUrl, httpClient = fetchJson) => {
      * @param {Object} params The REST request params, depending on the type
      * @returns {Object} { url, options } The HTTP request parameters
      */
+
+     console.log('Modified');
+    const aclLink = (acl) => {
+        if(typeof acl == 'undefined') {
+            return apiUrl;
+        } else {
+            return `${apiUrl}/${acl.ParentResource}/${acl.ParentId}}`
+        }
+    }
+
     const convertRESTRequestToHTTP = (type, resource, params) => {
         resource = resource.toLowerCase();
         let url = '';
@@ -48,11 +58,11 @@ export default (apiUrl, httpClient = fetchJson) => {
                         query['skip'] = (page - 1) * perPage;
                     }
                 }
-                url = `${apiUrl}/${resource}?${queryParameters({filter: JSON.stringify(query)})}`;
+                url = aclLink(params.acl) + `/${resource}?${queryParameters({filter: JSON.stringify(query)})}`;
                 break;
             }
             case GET_ONE:
-                url = `${apiUrl}/${resource}/${params.id}`;
+                url = aclLink(params.acl) + `/${resource}/${params.id}`;
                 break;
             case GET_MANY: {
                 const listId = params.ids.map(id => {
@@ -61,7 +71,7 @@ export default (apiUrl, httpClient = fetchJson) => {
                 const query = {
                     'where': {'or': listId}
                 };
-                url = `${apiUrl}/${resource}?${queryParameters({filter: JSON.stringify(query)})}`;
+                url =  aclLink(params.acl) + `/${resource}?${queryParameters({filter: JSON.stringify(query)})}`;
                 break;
             }
             case GET_MANY_REFERENCE: {
@@ -77,7 +87,7 @@ export default (apiUrl, httpClient = fetchJson) => {
                         query['skip'] = (page - 1) * perPage;
                     }
                 }
-                url = `${apiUrl}/${resource}?${queryParameters({filter: JSON.stringify(query)})}`;
+                url =  aclLink(params.acl) + `/${resource}?${queryParameters({filter: JSON.stringify(query)})}`;
                 break;
             }
             case UPDATE:
