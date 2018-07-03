@@ -136,10 +136,6 @@ Model.remoteMethod('updateMany', {
 <Admin restClient={loopbackRestClient('http://my.api.url/api')} ...>
 
 ```
-Where user-model-name is the plural for of the name of the user you use in loopback
-For example: "Users" or "Customers" if you extended the base model
-
-2. 
 
 ## License
 
