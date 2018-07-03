@@ -65,11 +65,9 @@ export default (apiUrl, httpClient = fetchJson) => {
                     }
                 }
                 url = aclLink(acl) + `/${resource}?${queryParameters({filter: JSON.stringify(query)})}`;
-                console.log(url);
                 break;
             }
             case GET_ONE:
-                console.log('GET_ONE !');
                 url = aclLink(acl) + `/${resource}/${params.id}`;
                 break;
             case GET_MANY: {

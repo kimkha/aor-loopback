@@ -39,9 +39,7 @@ Please check example here: [loopback-aor-boilerplate](https://github.com/kimkha/
 
 # Changes in this branch:
 * Added DELETE_MANY case for full compatibility with react-admin list view
-* Added UPDATE_MANY
-* Stores userid in localstorage for more verifications
-* Added AUTH_GET_PERMISSIONS type for
+* Added UPDATE_MANY (untested)
 
 ## Loopback changes To use DELETE_MANY and UPDATE_MANY
 (TODO: implement as hook in loopback)
