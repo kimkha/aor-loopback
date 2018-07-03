@@ -10,6 +10,7 @@ import {
     DELETE,
     DELETE_MANY
 } from './types';
+
 export * from './authClient';
 
 /**
@@ -32,12 +33,11 @@ export default (apiUrl, httpClient = fetchJson) => {
      * @returns {Object} { url, options } The HTTP request parameters
      */
 
-     console.log('Modified');
     const aclLink = (acl) => {
         if(typeof acl == 'undefined') {
             return apiUrl;
         } else {
-            return `${apiUrl}/${acl.ParentResource}/${acl.ParentId}}`
+            return `${apiUrl}/${acl.ParentResource}/${acl.ParentId}`
         }
     }
 
@@ -45,6 +45,12 @@ export default (apiUrl, httpClient = fetchJson) => {
         resource = resource.toLowerCase();
         let url = '';
         const options = {};
+        let acl;
+        if(typeof params.filter == 'object') {
+            acl = params.filter.acl;
+            delete params.filter.acl;
+        }
+
         switch (type) {
             case GET_LIST: {
                 const {page, perPage} = params.pagination;
@@ -58,11 +64,13 @@ export default (apiUrl, httpClient = fetchJson) => {
                         query['skip'] = (page - 1) * perPage;
                     }
                 }
-                url = aclLink(params.acl) + `/${resource}?${queryParameters({filter: JSON.stringify(query)})}`;
+                url = aclLink(acl) + `/${resource}?${queryParameters({filter: JSON.stringify(query)})}`;
+                console.log(url);
                 break;
             }
             case GET_ONE:
-                url = aclLink(params.acl) + `/${resource}/${params.id}`;
+                console.log('GET_ONE !');
+                url = aclLink(acl) + `/${resource}/${params.id}`;
                 break;
             case GET_MANY: {
                 const listId = params.ids.map(id => {
@@ -71,7 +79,7 @@ export default (apiUrl, httpClient = fetchJson) => {
                 const query = {
                     'where': {'or': listId}
                 };
-                url =  aclLink(params.acl) + `/${resource}?${queryParameters({filter: JSON.stringify(query)})}`;
+                url =  aclLink(acl) + `/${resource}?${queryParameters({filter: JSON.stringify(query)})}`;
                 break;
             }
             case GET_MANY_REFERENCE: {
@@ -87,7 +95,7 @@ export default (apiUrl, httpClient = fetchJson) => {
                         query['skip'] = (page - 1) * perPage;
                     }
                 }
-                url =  aclLink(params.acl) + `/${resource}?${queryParameters({filter: JSON.stringify(query)})}`;
+                url =  aclLink(acl) + `/${resource}?${queryParameters({filter: JSON.stringify(query)})}`;
                 break;
             }
             case UPDATE:

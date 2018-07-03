@@ -135,7 +135,7 @@ Model.remoteMethod('updateMany', {
 
 1. In the App.js add this:
 ```
-<Admin restClient={loopbackRestClient('http://my.api.url/api', 'user-model-name-plural')} ...>
+<Admin restClient={loopbackRestClient('http://my.api.url/api')} ...>
 
 ```
 Where user-model-name is the plural for of the name of the user you use in loopback
