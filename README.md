@@ -30,7 +30,7 @@ import loopbackRestClient, {authClient} from 'aor-loopback';
 
 ...
 
-    <Admin restClient={loopbackRestClient('http://my.api.url/api')} authClient={authClient('http://my.api.url/api/users/login')} ...>
+    <Admin restClient={loopbackRestClient('http://my.api.url/api')} authClient={authClient('http://my.api.url/api')} ...>
 ```
 
 ## Example
@@ -40,6 +40,72 @@ Please check example here: [loopback-aor-boilerplate](https://github.com/kimkha/
 # Changes in this branch:
 * Added DELETE_MANY case for full compatibility with react-admin list view
 * Added UPDATE_MANY (untested)
+
+# authCLient change to integrate `AUTH_GET_PERMISSIONS` case
+* The integration with react-admin is transparent, just follow instructions about "Authorization" in the documentation 
+* You have to implement the method `getRolesById` in user model on Loopback side that responds with the role of the user. For example:
+
+```
+const _ = require('lodash')
+
+'use strict';
+
+module.exports = function(Customer) {
+    /**
+     * Display role for user
+     * @param {string} id Customer's ID
+     * @param {Function(Error, object)}
+     */
+
+    Customer.getRolesById = function(id, cb) {
+        var payload;
+
+        Customer.getApp(function (err, app) {
+
+            if (err) throw err;
+      
+            var RoleMapping = app.models.RoleMapping;
+      
+            var Role = app.models.Role;
+      
+            RoleMapping.find({ where : { principalId: id }}, function (err, roleMappings) {
+            
+              if (!roleMappings.length) { return cb(null, { "roles": [] }); }
+            
+              var roleIds = _.uniq(roleMappings
+      
+                .map(function (roleMapping) {
+      
+                  return roleMapping.roleId;
+      
+                }));
+      
+              var conditions = roleIds.map(function (roleId) {
+      
+                return { id: roleId };
+      
+              });
+      
+              Role.find({ where: { or: conditions}}, function (err, roles) {
+      
+                if (err) throw err;
+      
+                var roleNames = roles.map(function(role) {
+      
+                  return role.name;
+      
+                });
+      
+                cb(null, {"roles": roleNames});
+      
+              });
+      
+            });
+      
+          });
+    };
+};
+```
 
 ## Loopback changes To use DELETE_MANY and UPDATE_MANY
 (TODO: implement as hook in loopback)
