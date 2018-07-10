@@ -6,8 +6,11 @@ import {
     GET_MANY_REFERENCE,
     CREATE,
     UPDATE,
+    UPDATE_MANY,
     DELETE,
+    DELETE_MANY
 } from './types';
+
 export * from './authClient';
 
 /**
@@ -29,10 +32,25 @@ export default (apiUrl, httpClient = fetchJson) => {
      * @param {Object} params The REST request params, depending on the type
      * @returns {Object} { url, options } The HTTP request parameters
      */
+
+    const aclLink = (acl) => {
+        if(typeof acl == 'undefined') {
+            return apiUrl;
+        } else {
+            return `${apiUrl}/${acl.ParentResource}/${acl.ParentId}`
+        }
+    }
+
     const convertRESTRequestToHTTP = (type, resource, params) => {
         resource = resource.toLowerCase();
         let url = '';
         const options = {};
+        let acl;
+        if(typeof params.filter == 'object') {
+            acl = params.filter.acl;
+            delete params.filter.acl;
+        }
+
         switch (type) {
             case GET_LIST: {
                 const {page, perPage} = params.pagination;
@@ -46,11 +64,11 @@ export default (apiUrl, httpClient = fetchJson) => {
                         query['skip'] = (page - 1) * perPage;
                     }
                 }
-                url = `${apiUrl}/${resource}?${queryParameters({filter: JSON.stringify(query)})}`;
+                url = aclLink(acl) + `/${resource}?${queryParameters({filter: JSON.stringify(query)})}`;
                 break;
             }
             case GET_ONE:
-                url = `${apiUrl}/${resource}/${params.id}`;
+                url = aclLink(acl) + `/${resource}/${params.id}`;
                 break;
             case GET_MANY: {
                 const listId = params.ids.map(id => {
@@ -59,7 +77,7 @@ export default (apiUrl, httpClient = fetchJson) => {
                 const query = {
                     'where': {'or': listId}
                 };
-                url = `${apiUrl}/${resource}?${queryParameters({filter: JSON.stringify(query)})}`;
+                url =  aclLink(acl) + `/${resource}?${queryParameters({filter: JSON.stringify(query)})}`;
                 break;
             }
             case GET_MANY_REFERENCE: {
@@ -75,7 +93,7 @@ export default (apiUrl, httpClient = fetchJson) => {
                         query['skip'] = (page - 1) * perPage;
                     }
                 }
-                url = `${apiUrl}/${resource}?${queryParameters({filter: JSON.stringify(query)})}`;
+                url =  aclLink(acl) + `/${resource}?${queryParameters({filter: JSON.stringify(query)})}`;
                 break;
             }
             case UPDATE:
@@ -91,6 +109,16 @@ export default (apiUrl, httpClient = fetchJson) => {
             case DELETE:
                 url = `${apiUrl}/${resource}/${params.id}`;
                 options.method = 'DELETE';
+                break;
+            case DELETE_MANY:
+                url = `${apiUrl}/${resource}/deleteMany`;
+                options.body = JSON.stringify({ids: params.ids});
+                options.method = 'DELETE';
+                break;
+            case UPDATE_MANY:
+                url = `${apiUrl}/${resource}/updateMany`;
+                options.body = JSON.stringify(params.data);
+                options.method = 'PATCH';
                 break;
             default:
                 throw new Error(`Unsupported fetch action type ${type}`);

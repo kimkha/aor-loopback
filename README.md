@@ -1,10 +1,10 @@
-# Loopback-style REST Client for Admin-on-rest
+# Loopback-style REST Client for react-admin
 
-Loopback-style REST Client for [admin-on-rest](https://github.com/marmelab/admin-on-rest), the frontend framework for building admin applications on top of REST services.
+Loopback-style REST Client for [react-admin](https://github.com/marmelab/react-admin), the frontend framework for building admin applications on top of REST services.
 
 ## Important note
 
-Because of recent changes of **admin-on-rest**, this module will only support version 0.9.0 (or later) of admin-on-rest.
+Because of recent changes of **react-admin**, this module will only support version 0.9.0 (or later) of react-admin.
 
 ## Prerequisite
 
@@ -30,12 +30,180 @@ import loopbackRestClient, {authClient} from 'aor-loopback';
 
 ...
 
-    <Admin restClient={loopbackRestClient('http://my.api.url/api')} authClient={authClient('http://my.api.url/api/users/login')} ...>
+    <Admin restClient={loopbackRestClient('http://my.api.url/api')} authClient={authClient('http://my.api.url/api')} ...>
 ```
 
 ## Example
 
 Please check example here: [loopback-aor-boilerplate](https://github.com/kimkha/loopback-aor-boilerplate), you should clone it and change your model later.
+
+# Changes in this branch:
+* Modified authClient to integrate `AUTH_GET_PERMISSIONS` case
+* Added DELETE_MANY case for full compatibility with react-admin list view
+* Added UPDATE_MANY (untested)
+
+
+## authClient usage:
+* The integration with react-admin is transparent, just follow the instructions about "Authorization" in the documentation 
+* You have to implement the method `getRolesById` in user model on Loopback side that responds with the role of the user. For example:
+
+```
+const _ = require('lodash')
+
+'use strict';
+
+module.exports = function(Customer) {
+    /**
+     * Display role for user
+     * @param {string} id Customer's ID
+     * @param {Function(Error, object)}
+     */
+
+    Customer.getRolesById = function(id, cb) {
+        var payload;
+
+        Customer.getApp(function (err, app) {
+
+            if (err) throw err;
+      
+            var RoleMapping = app.models.RoleMapping;
+      
+            var Role = app.models.Role;
+      
+            RoleMapping.find({ where : { principalId: id }}, function (err, roleMappings) {
+            
+              if (!roleMappings.length) { return cb(null, { "roles": [] }); }
+            
+              var roleIds = _.uniq(roleMappings
+      
+                .map(function (roleMapping) {
+      
+                  return roleMapping.roleId;
+      
+                }));
+      
+              var conditions = roleIds.map(function (roleId) {
+      
+                return { id: roleId };
+      
+              });
+      
+              Role.find({ where: { or: conditions}}, function (err, roles) {
+      
+                if (err) throw err;
+      
+                var roleNames = roles.map(function(role) {
+      
+                  return role.name;
+      
+                });
+      
+                cb(null, {"roles": roleNames});
+      
+              });
+      
+            });
+      
+          });
+    };
+};
+```
+
+## Loopback changes To use DELETE_MANY and UPDATE_MANY
+(TODO: implement as hook in loopback)
+1. Add deleteMany and updateMany remote method to your model  (model.js):
+```
+
+const _ = require('lodash')
+
+Model.deleteMany = function(ids, callback) {
+        var count = 0;
+        // Check if persisted model
+        if(typeof Model.destroyAll !== 'function') {
+            callback(new Error('This method works only with persisted models'));
+            return false;
+        }
+        // Check if id is array 
+        if(!_.isArray(ids)) {
+            callback(new Error('ids argument has to be an array'));
+            return false;
+        }
+        Model.destroyAll({id: {inq: ids}}, (err, info) => {
+            if(err) {
+                callback(err);
+                return false;
+            }
+            callback(null, {data: info});
+        })
+    };
+Model.remoteMethod('deleteMany', {
+    description: "Deletes several record corresponding to array of IDs",
+    accepts: {
+        arg: "ids",
+        type: "array",
+        required: true,
+        description: "Array of IDs to delete"
+    },
+    returns: { 
+        arg: "payload",
+        type: "number",
+        root: false,
+        description: "Number of deleted items"
+    },
+    http: {
+        "path": "/deleteMany",
+        "verb": "delete"
+    }
+})
+
+Model.updateMany = function(params, callback) {
+        var count = 0;
+        var ids = params.ids;
+        delete params.ids;
+
+        // Check if persisted model
+        if(typeof Model.updateAll !== 'function') {
+            callback(new Error('This method works only with persisted models'));
+            return false;
+        }
+        // Check if id is array 
+        if(!_.isArray(ids)) {
+            callback(new Error('ids argument has to be an array'));
+            return false;
+        }
+        Model.updateAll({id: {inq: ids}}, params, (err, info) => {
+            callback(null, {data: info});
+        })
+    };
+
+Model.remoteMethod('updateMany', {
+    description: "Updates several record corresponding to array of IDs",
+    accepts: {
+        arg: "params",
+        type: "object",
+        required: true,
+        description: "Object with IDs and fields to update"
+    },
+    returns: { 
+        arg: "payload",
+        type: "number",
+        root: false,
+        description: "Number of updated items"
+    },
+    http: {
+        "path": "/updateMany",
+        "verb": "patch"
+    }
+})
+```
+
+## Using Loopback ACL
+
+1. In the App.js add this:
+```
+<Admin restClient={loopbackRestClient('http://my.api.url/api')} ...>
+
+```
 
 ## License
 
