@@ -43,8 +43,8 @@ Please check example here: [loopback-aor-boilerplate](https://github.com/kimkha/
 * Added UPDATE_MANY (untested)
 
 
-## authCLient usage:
-* The integration with react-admin is transparent, just follow instructions about "Authorization" in the documentation 
+## authClient usage:
+* The integration with react-admin is transparent, just follow the instructions about "Authorization" in the documentation 
 * You have to implement the method `getRolesById` in user model on Loopback side that responds with the role of the user. For example:
 
 ```
