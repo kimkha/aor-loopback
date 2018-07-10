@@ -38,10 +38,12 @@ import loopbackRestClient, {authClient} from 'aor-loopback';
 Please check example here: [loopback-aor-boilerplate](https://github.com/kimkha/loopback-aor-boilerplate), you should clone it and change your model later.
 
 # Changes in this branch:
+* Modified authClient to integrate `AUTH_GET_PERMISSIONS` case
 * Added DELETE_MANY case for full compatibility with react-admin list view
 * Added UPDATE_MANY (untested)
 
-# authCLient change to integrate `AUTH_GET_PERMISSIONS` case
+
+## authCLient usage:
 * The integration with react-admin is transparent, just follow instructions about "Authorization" in the documentation 
 * You have to implement the method `getRolesById` in user model on Loopback side that responds with the role of the user. For example:
 
