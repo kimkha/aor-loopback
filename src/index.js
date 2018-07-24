@@ -21,7 +21,7 @@ export * from './authClient';
  * GET_LIST     => GET http://my.api.url/posts?filter[sort]="title ASC"&filter[skip]=0&filter[limit]=20
  * GET_ONE      => GET http://my.api.url/posts/123
  * GET_MANY     => GET http://my.api.url/posts?filter[where][or]=[{id:123},{id:456}]
- * UPDATE       => PATCH http://my.api.url/posts/123
+ * UPDATE       => PUT http://my.api.url/posts/123
  * CREATE       => POST http://my.api.url/posts/123
  * DELETE       => DELETE http://my.api.url/posts/123
  */
@@ -49,6 +49,12 @@ export default (apiUrl, httpClient = fetchJson) => {
         if(typeof params.filter == 'object') {
             acl = params.filter.acl;
             delete params.filter.acl;
+        } else if(params.data && params.data.ParentResource !== undefined && params.data.ParentResource !== '' ) {
+            acl = {};
+            acl.ParentResource = params.data.ParentResource;
+            acl.ParentId = params.data.ParentId;
+            delete(params.ParentId);
+            delete(params.data.ParentResource);
         }
 
         switch (type) {
@@ -97,28 +103,31 @@ export default (apiUrl, httpClient = fetchJson) => {
                 break;
             }
             case UPDATE:
-                url = `${apiUrl}/${resource}/${params.id}`;
-                options.method = 'PATCH';
+                url =  aclLink(acl) + `/${resource}/${params.id}`;
+                options.method = 'PUT';
                 options.body = JSON.stringify(params.data);
                 break;
             case CREATE:
-                url = `${apiUrl}/${resource}`;
+                url =  aclLink(acl) + `/${resource}`;
+                console.log(url);
                 options.method = 'POST';
                 options.body = JSON.stringify(params.data);
                 break;
             case DELETE:
-                url = `${apiUrl}/${resource}/${params.id}`;
+                url =  aclLink(acl) + `/${resource}/${params.id}`;
                 options.method = 'DELETE';
                 break;
-            case DELETE_MANY:
-                url = `${apiUrl}/${resource}/deleteMany`;
+            case DELETE_MANY: 
+                // We use custom function so we don't need ACL
+                url =  `${apiUrl}/${resource}/deleteMany`;
                 options.body = JSON.stringify({ids: params.ids});
                 options.method = 'DELETE';
                 break;
             case UPDATE_MANY:
-                url = `${apiUrl}/${resource}/updateMany`;
+                // We use custom function so we don't need ACL
+                url =  `${apiUrl}/${resource}/updateMany`;
                 options.body = JSON.stringify(params.data);
-                options.method = 'PATCH';
+                options.method = 'PUT';
                 break;
             default:
                 throw new Error(`Unsupported fetch action type ${type}`);
