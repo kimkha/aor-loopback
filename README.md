@@ -41,7 +41,25 @@ Please check example here: [loopback-aor-boilerplate](https://github.com/kimkha/
 * Modified authClient to integrate `AUTH_GET_PERMISSIONS` case
 * Added DELETE_MANY case for full compatibility with react-admin list view
 * Added UPDATE_MANY (untested)
+* Added special search for adding multi field or substring search to the default component
 
+# Search in multiple fields:
+* In filter property of List component add an array as specialSearch.multipleSearch parameter. For example:
+```
+<List title="Mail Received"  actions={<InboxActions />}  filter={{ specialSearch: {
+				multipleSearch: [ 'from', 'from_name' ]
+			}}} filters={<InboxFilter />} {...props}>
+```
+Will search in fields "from" and "from_name" AND in the property "source" of the search field as normal.
+
+# Search by substring:
+* In filter property of List component set the property specialSearch.searchByParts to true. For example:
+```
+<List title="Mail Received"  actions={<InboxActions />}  filter={{ specialSearch: {
+				searchByParts: true
+			}}} filters={<InboxFilter />} {...props}>
+```
+Will trigger a regexp search like "/.*?search_term.*?/i"
 
 ## authClient usage:
 * The integration with react-admin is transparent, just follow the instructions about "Authorization" in the documentation 

@@ -46,9 +46,12 @@ export default (apiUrl, httpClient = fetchJson) => {
         let url = '';
         const options = {};
         let acl;
+        let specialSearch;
         if(typeof params.filter == 'object') {
             acl = params.filter.acl;
             delete params.filter.acl;
+            specialSearch = params.filter.specialSearch;
+            delete params.filter.specialSearch
         } else if(params.data && params.data.ParentResource !== undefined && params.data.ParentResource !== '' ) {
             acl = {};
             acl.ParentResource = params.data.ParentResource;
@@ -62,7 +65,12 @@ export default (apiUrl, httpClient = fetchJson) => {
                 const {page, perPage} = params.pagination;
                 const {field, order} = params.sort;
                 const query = {};
-                query['where'] = {...params.filter};
+                const filters = {...params.filter};
+                
+                if(specialSearch === undefined) query['where'] = filters;
+                else {
+                    query['where'] = specialSearchToWhere(specialSearch, filters);
+                }
                 if (field) query['order'] = [field + ' ' + order];
                 if (perPage > 0) {
                     query['limit'] = perPage;
@@ -109,7 +117,6 @@ export default (apiUrl, httpClient = fetchJson) => {
                 break;
             case CREATE:
                 url =  aclLink(acl) + `/${resource}`;
-                console.log(url);
                 options.method = 'POST';
                 options.body = JSON.stringify(params.data);
                 break;
@@ -173,3 +180,27 @@ export default (apiUrl, httpClient = fetchJson) => {
             .then(response => convertHTTPResponseToREST(response, type, resource, params));
     };
 };
+
+
+function specialSearchToWhere(options, filters) {
+    if(Object.keys(filters).length === 0) return; //No search term
+
+    let or = [];
+    let res = {};
+    for(let prop in filters) {
+        options.multipleSearch.forEach((field) => {
+            filters[field] = filters[prop];
+        })
+    }
+    if(options.searchByParts) {
+        for(let prop in filters) {
+            let resFilter = {};
+            resFilter[prop] = {};
+            resFilter[prop]['regexp'] = "/.*?" + filters[prop]+ ".*?/i";
+            or.push(resFilter);
+        }
+    }
+    console.log(or);
+    res['or'] = or;
+    return res
+} 
