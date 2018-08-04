@@ -26,3 +26,4 @@ typings/
 .env
 .idea/
 lib
+*.iml
