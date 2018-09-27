@@ -118,6 +118,7 @@ export default (apiUrl, httpClient = fetchJson) => {
                     total: parseInt(headers.get('x-total-count').split('/').pop(), 10),
                 };
             case CREATE:
+            case DELETE:
                 return { data: { ...params.data, id: json.id } };
             default:
                 return { data: json };
