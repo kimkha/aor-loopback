@@ -2,7 +2,9 @@
 
 Loopback-style REST Client for [admin-on-rest](https://github.com/marmelab/admin-on-rest), the frontend framework for building admin applications on top of REST services.
 
-## Important note
+## Not maintained anymore
+
+With new [react-admin](), please use [loopback-component-react-admin](https://github.com/kimkha/loopback-component-react-admin) instead.
 
 Because of recent changes of **admin-on-rest**, this module will only support version 0.9.0 (or later) of admin-on-rest.
 
